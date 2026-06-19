@@ -1,33 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    lucide.createIcons();
-
-    document.addEventListener('mousemove', (e) => {
-        const spotlight = document.getElementById('spotlight');
-        if(spotlight) {
-            spotlight.style.setProperty('--mouse-x', `${e.clientX}px`);
-            spotlight.style.setProperty('--mouse-y', `${e.clientY}px`);
-        }
-    });
-
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    let audioCtx;
-
-    function playSound(type = 'select') {
-        try {
-            if (!audioCtx) audioCtx = new AudioContext();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            if (type === 'select') {
-                osc.type = 'sine'; osc.frequency.setValueAtTime(800, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-            } else {
-                osc.type = 'triangle'; osc.frequency.setValueAtTime(400, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0.05, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-            }
-            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-        } catch(e) {}
-    }
+    initCommonPage();
 
     const questions = [
         { q: "At a party, do you usually:", a: "Interact with many, including strangers", b: "Interact with a few people you know" },
@@ -102,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { q: "Do you tend to be more:", a: "Deliberate than spontaneous", b: "Spontaneous than deliberate" }
     ];
 
-    let state = JSON.parse(localStorage.getItem('personaPremiumState'));
+    let state = loadState();
 
     if (!state || state.isComplete) {
         window.location.href = './index.html';
@@ -177,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (state.currentQuestion < questions.length - 1) {
             state.currentQuestion++;
             state.selectedCurrent = state.answers[state.currentQuestion];
-            localStorage.setItem('personaPremiumState', JSON.stringify(state));
+            saveState(state);
             renderQuestion(true);
         } else {
             calculateResults();

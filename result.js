@@ -1,27 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    lucide.createIcons();
-
-    document.addEventListener('mousemove', (e) => {
-        const spotlight = document.getElementById('spotlight');
-        if(spotlight) {
-            spotlight.style.setProperty('--mouse-x', `${e.clientX}px`);
-            spotlight.style.setProperty('--mouse-y', `${e.clientY}px`);
-        }
-    });
-
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    let audioCtx;
-    function playNavSound() {
-        try {
-            if (!audioCtx) audioCtx = new AudioContext();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'triangle'; osc.frequency.setValueAtTime(400, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.1);
-            gain.gain.setValueAtTime(0.05, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-        } catch(e) {}
-    }
+    initCommonPage();
 
     const resultsData = {
         "ENFJ": { name: "The Giver", desc: "Warm, empathetic, responsive, and responsible. Highly attuned to the emotions and needs of others. Natural leaders who inspire.", traits: ["Exceptionally good people skills", "Genuinely interested in others", "Value harmony and organization"], careers: [{t:"Counseling/Therapy", d:"Utilizes natural empathy and desire to heal.", i:"heart"}, {t:"Teaching", d:"Allows for inspiring and guiding others' growth.", i:"book-open"}, {t:"Human Resources", d:"Plays to strengths in understanding people and organizational harmony.", i:"users"}] },
@@ -42,14 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
         "ISTP": { name: "The Mechanic", desc: "Tolerant and flexible, quiet observers until a problem appears, then act quickly to find workable solutions. Analyze what makes things work.", traits: ["Interested in how things work", "Action-oriented doers", "Excellent troubleshooters"], careers: [{t:"Engineering", d:"Satisfies the drive to take things apart and fix them.", i:"tool"}, {t:"Athletics", d:"Utilizes strong physical awareness and tactical thinking.", i:"activity"}, {t:"Cybersecurity", d:"Applies logical troubleshooting to practical crises.", i:"shield"}] }
     };
 
-    const stateStr = localStorage.getItem('personaPremiumState');
-    if (!stateStr) {
-        window.location.href = './index.html';
-        return;
-    }
-    
-    const state = JSON.parse(stateStr);
-    if (!state.isComplete) {
+    const state = loadState();
+    if (!state || !state.isComplete) {
         window.location.href = './index.html';
         return;
     }
@@ -112,9 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('reset-btn').addEventListener('click', () => {
         playNavSound();
-        localStorage.removeItem('personaPremiumState');
-        setTimeout(() => {
-            window.location.href = './index.html';
-        }, 200);
+        resetState();
+        navigateTo('./index.html');
     });
 });
