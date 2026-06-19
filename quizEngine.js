@@ -1,3 +1,17 @@
+const PERCENTAGE_SCALE = 100;
+const QUESTION_INDEX_INCREMENT = 1;
+const RESULT_GROUP_SIZE = 7;
+const INITIAL_SCORE_VALUE = 0;
+const OPTION_A = 0;
+const OPTION_B = 1;
+const RESULT_CATEGORY_MOD_EI = 0;
+const RESULT_CATEGORY_MOD_SN_FIRST = 1;
+const RESULT_CATEGORY_MOD_SN_SECOND = 2;
+const RESULT_CATEGORY_MOD_TF_FIRST = 3;
+const RESULT_CATEGORY_MOD_TF_SECOND = 4;
+const RESULT_CATEGORY_MOD_JP_FIRST = 5;
+const RESULT_CATEGORY_MOD_JP_SECOND = 6;
+
 export function createQuizEngine(state, questions) {
     const engine = {
         state,
@@ -8,7 +22,7 @@ export function createQuizEngine(state, questions) {
         },
 
         getProgress() {
-            return (this.state.currentQuestion / this.questions.length) * 100;
+            return (this.state.currentQuestion / this.questions.length) * PERCENTAGE_SCALE;
         },
 
         selectOption(optionIndex) {
@@ -17,8 +31,8 @@ export function createQuizEngine(state, questions) {
         },
 
         advance() {
-            if (this.state.currentQuestion < this.questions.length - 1) {
-                this.state.currentQuestion += 1;
+            if (this.state.currentQuestion < this.questions.length - QUESTION_INDEX_INCREMENT) {
+                this.state.currentQuestion += QUESTION_INDEX_INCREMENT;
                 this.state.selectedCurrent = this.state.answers[this.state.currentQuestion];
                 return true;
             }
@@ -26,14 +40,14 @@ export function createQuizEngine(state, questions) {
         },
 
         calculateResult() {
-            const s = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+            const s = { E: INITIAL_SCORE_VALUE, I: INITIAL_SCORE_VALUE, S: INITIAL_SCORE_VALUE, N: INITIAL_SCORE_VALUE, T: INITIAL_SCORE_VALUE, F: INITIAL_SCORE_VALUE, J: INITIAL_SCORE_VALUE, P: INITIAL_SCORE_VALUE };
 
             this.state.answers.forEach((ans, index) => {
-                const mod = index % 7;
-                if (mod === 0) { ans === 0 ? s.E++ : s.I++; }
-                else if (mod === 1 || mod === 2) { ans === 0 ? s.S++ : s.N++; }
-                else if (mod === 3 || mod === 4) { ans === 0 ? s.T++ : s.F++; }
-                else if (mod === 5 || mod === 6) { ans === 0 ? s.J++ : s.P++; }
+                const mod = index % RESULT_GROUP_SIZE;
+                if (mod === RESULT_CATEGORY_MOD_EI) { ans === OPTION_A ? s.E++ : s.I++; }
+                else if (mod === RESULT_CATEGORY_MOD_SN_FIRST || mod === RESULT_CATEGORY_MOD_SN_SECOND) { ans === OPTION_A ? s.S++ : s.N++; }
+                else if (mod === RESULT_CATEGORY_MOD_TF_FIRST || mod === RESULT_CATEGORY_MOD_TF_SECOND) { ans === OPTION_A ? s.T++ : s.F++; }
+                else if (mod === RESULT_CATEGORY_MOD_JP_FIRST || mod === RESULT_CATEGORY_MOD_JP_SECOND) { ans === OPTION_A ? s.J++ : s.P++; }
             });
 
             this.state.result = (s.E >= s.I ? 'E' : 'I') +

@@ -1,3 +1,5 @@
+const INITIAL_QUESTION_INDEX = 0;
+
 document.addEventListener('DOMContentLoaded', () => {
     initCommonPage();
 
@@ -10,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (savedState) {
         if (savedState.isComplete) {
             window.location.href = './result.html';
-        } else if (savedState.currentQuestion > 0) {
+        } else if (savedState.currentQuestion > INITIAL_QUESTION_INDEX) {
             window.location.href = './quiz.html';
         }
     }

@@ -1,3 +1,6 @@
+const TOTAL_QUESTIONS = 70;
+const INITIAL_QUESTION_INDEX = 0;
+
 document.addEventListener('DOMContentLoaded', () => {
     initCommonPage();
 
@@ -5,8 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
         playNavSound();
 
         const state = {
-            currentQuestion: 0,
-            answers: new Array(70).fill(null),
+            currentQuestion: INITIAL_QUESTION_INDEX,
+            answers: new Array(TOTAL_QUESTIONS).fill(null),
             selectedCurrent: null,
             isComplete: false,
             result: null,

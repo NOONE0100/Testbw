@@ -1,3 +1,14 @@
+const AUDIO_RAMP_DURATION = 0.1;
+const AUDIO_STOP_DELAY = 0.1;
+const AUDIO_SELECT_FREQUENCY_START = 800;
+const AUDIO_SELECT_FREQUENCY_END = 400;
+const AUDIO_NAV_FREQUENCY_START = 400;
+const AUDIO_NAV_FREQUENCY_END = 600;
+const AUDIO_SELECT_GAIN_START = 0.1;
+const AUDIO_NAV_GAIN_START = 0.05;
+const AUDIO_GAIN_END = 0.01;
+const NAVIGATION_DELAY_MS = 200;
+
 function initCommonPage() {
     lucide.createIcons();
 
@@ -30,22 +41,22 @@ function playSound(type = 'select') {
 
         if (type === 'select') {
             osc.type = 'sine';
-            osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.1);
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.frequency.setValueAtTime(AUDIO_SELECT_FREQUENCY_START, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(AUDIO_SELECT_FREQUENCY_END, audioCtx.currentTime + AUDIO_RAMP_DURATION);
+            gain.gain.setValueAtTime(AUDIO_SELECT_GAIN_START, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(AUDIO_GAIN_END, audioCtx.currentTime + AUDIO_RAMP_DURATION);
         } else {
             osc.type = 'triangle';
-            osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.1);
-            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.frequency.setValueAtTime(AUDIO_NAV_FREQUENCY_START, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(AUDIO_NAV_FREQUENCY_END, audioCtx.currentTime + AUDIO_RAMP_DURATION);
+            gain.gain.setValueAtTime(AUDIO_NAV_GAIN_START, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(AUDIO_GAIN_END, audioCtx.currentTime + AUDIO_RAMP_DURATION);
         }
 
         osc.connect(gain);
         gain.connect(audioCtx.destination);
         osc.start();
-        osc.stop(audioCtx.currentTime + 0.1);
+        osc.stop(audioCtx.currentTime + AUDIO_STOP_DELAY);
     } catch (e) {
         // swallow audio errors so page still works
     }
@@ -55,7 +66,7 @@ function playNavSound() {
     playSound('nav');
 }
 
-function navigateTo(url, delay = 200) {
+function navigateTo(url, delay = NAVIGATION_DELAY_MS) {
     setTimeout(() => {
         window.location.href = url;
     }, delay);

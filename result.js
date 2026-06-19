@@ -1,3 +1,28 @@
+const SCORE_MAX_EI = 10;
+const SCORE_MAX_OTHER = 20;
+const SCORE_BAR_PERCENTAGE = 100;
+const PDF_SCALE = 2;
+const PDF_BACKGROUND_COLOR = '#1A0B18';
+const PDF_UNIT = 'px';
+const PDF_ORIENTATION = 'portrait';
+const PDF_IMAGE_FORMAT = 'PNG';
+const PDF_IMAGE_TYPE = 'image/png';
+const PDF_FILENAME_TEMPLATE = 'Persona-Profile-%s.pdf';
+const PDF_ORIGIN = 0;
+const PDF_BUTTON_LOADING_TEXT = '<i data-lucide="loader"></i> Processing...';
+const PDF_FAILURE_MESSAGE = 'Failed to generate PDF. Please try again.';
+
+const DOWNLOAD_BUTTON_ID = 'download-btn';
+const ACTION_BUTTONS_ID = 'action-buttons';
+const GLASS_PANEL_SELECTOR = '.glass-panel';
+
+const SCORE_LEFT_RIGHT_PAIRS = [
+    { left: 'Extraversion (E)', right: 'Introversion (I)', leftKey: 'E', rightKey: 'I', max: SCORE_MAX_EI },
+    { left: 'Sensing (S)', right: 'Intuition (N)', leftKey: 'S', rightKey: 'N', max: SCORE_MAX_OTHER },
+    { left: 'Thinking (T)', right: 'Feeling (F)', leftKey: 'T', rightKey: 'F', max: SCORE_MAX_OTHER },
+    { left: 'Judging (J)', right: 'Perceiving (P)', leftKey: 'J', rightKey: 'P', max: SCORE_MAX_OTHER }
+];
+
 document.addEventListener('DOMContentLoaded', () => {
     initCommonPage();
 
@@ -37,15 +62,17 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('res-desc').innerText = data.desc;
 
         const s = state.scores;
-        const pairs = [
-            { left: 'Extraversion (E)', right: 'Introversion (I)', lScore: s.E, rScore: s.I, max: 10 },
-            { left: 'Sensing (S)', right: 'Intuition (N)', lScore: s.S, rScore: s.N, max: 20 },
-            { left: 'Thinking (T)', right: 'Feeling (F)', lScore: s.T, rScore: s.F, max: 20 },
-            { left: 'Judging (J)', right: 'Perceiving (P)', lScore: s.J, rScore: s.P, max: 20 }
-        ];
+        const pairs = SCORE_LEFT_RIGHT_PAIRS.map(pair => ({
+            left: pair.left,
+            right: pair.right,
+            lScore: s[pair.leftKey],
+            rScore: s[pair.rightKey],
+            max: pair.max
+        }));
 
         document.getElementById('res-scores').innerHTML = pairs.map(p => {
-            const leftDom = p.lScore >= p.rScore; const pct = (p.lScore / p.max) * 100;
+            const leftDom = p.lScore >= p.rScore;
+            const pct = (p.lScore / p.max) * SCORE_BAR_PERCENTAGE;
             return `<div class="score-bar-wrapper"><div class="score-labels"><span class="${leftDom ? 'dominant' : ''}">${p.left}</span><span class="${!leftDom ? 'dominant' : ''}">${p.right}</span></div><div class="score-track"><div class="score-fill" style="width: ${pct}%"></div></div></div>`;
         }).join('');
 
@@ -55,30 +82,33 @@ document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
     }
 
-    document.getElementById('download-btn').addEventListener('click', async () => {
-        playNavSound(); 
-        const btn = document.getElementById('download-btn'); 
-        const wrapper = document.getElementById('action-buttons'); 
-        const panel = document.querySelector('.glass-panel');
-        
-        const originalHTML = btn.innerHTML; 
-        btn.innerHTML = '<i data-lucide="loader"></i> Processing...'; 
+    document.getElementById(DOWNLOAD_BUTTON_ID).addEventListener('click', async () => {
+        playNavSound();
+        const btn = document.getElementById(DOWNLOAD_BUTTON_ID);
+        const wrapper = document.getElementById(ACTION_BUTTONS_ID);
+        const panel = document.querySelector(GLASS_PANEL_SELECTOR);
+
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = PDF_BUTTON_LOADING_TEXT;
         lucide.createIcons();
         wrapper.style.display = 'none';
-        
+
         try {
-            const canvas = await html2canvas(panel, { scale: 2, backgroundColor: '#1A0B18', useCORS: true, logging: false });
-            const imgData = canvas.toDataURL('image/png'); const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [canvas.width / 2, canvas.height / 2] });
-            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2); 
-            pdf.save(`Persona-Profile-${state.result}.pdf`);
-        } catch (error) { 
-            console.error("PDF creation failed:", error); 
-            alert("Failed to generate PDF. Please try again."); 
-        } finally { 
-            wrapper.style.display = 'flex'; 
-            btn.innerHTML = originalHTML; 
-            lucide.createIcons(); 
+            const canvas = await html2canvas(panel, { scale: PDF_SCALE, backgroundColor: PDF_BACKGROUND_COLOR, useCORS: true, logging: false });
+            const imgData = canvas.toDataURL(PDF_IMAGE_TYPE);
+            const { jsPDF } = window.jspdf;
+            const pdfWidth = canvas.width / PDF_SCALE;
+            const pdfHeight = canvas.height / PDF_SCALE;
+            const pdf = new jsPDF({ orientation: PDF_ORIENTATION, unit: PDF_UNIT, format: [pdfWidth, pdfHeight] });
+            pdf.addImage(imgData, PDF_IMAGE_FORMAT, PDF_ORIGIN, PDF_ORIGIN, pdfWidth, pdfHeight);
+            pdf.save(PDF_FILENAME_TEMPLATE.replace('%s', state.result));
+        } catch (error) {
+            console.error('PDF creation failed:', error);
+            alert(PDF_FAILURE_MESSAGE);
+        } finally {
+            wrapper.style.display = 'flex';
+            btn.innerHTML = originalHTML;
+            lucide.createIcons();
         }
     });
 
