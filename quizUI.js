@@ -16,30 +16,38 @@ const LAST_QUESTION_OFFSET = 1;
 const RESET_DELAY_MS = 600;
 
 export function createQuizUI(engine) {
+    const qMeta = document.getElementById('q-meta');
+    const progressBar = document.getElementById('progress-bar');
+    const qPct = document.getElementById('q-pct');
+    const qText = document.getElementById('q-text');
+    const optText0 = document.getElementById('opt-text-0');
+    const optText1 = document.getElementById('opt-text-1');
+    const opt0 = document.getElementById('opt-0');
+    const opt1 = document.getElementById('opt-1');
+    const nextBtn = document.getElementById('next-btn');
+    const wrapper = document.getElementById('q-wrapper');
+    const opts = document.getElementById('opt-container');
+
     const ui = {
         engine,
 
         renderQuestion(animate = true) {
             const question = this.engine.getCurrentQuestion();
             const updateContent = () => {
-                document.getElementById('q-meta').innerText = `Question ${this.engine.state.currentQuestion + QUESTION_NUMBER_OFFSET} of ${this.engine.questions.length}`;
+                qMeta.innerText = `Question ${this.engine.state.currentQuestion + QUESTION_NUMBER_OFFSET} of ${this.engine.questions.length}`;
                 const progress = this.engine.getProgress();
-                document.getElementById('progress-bar').style.width = `${progress}%`;
-                document.getElementById('q-pct').innerText = `${Math.round(progress)}%`;
-                document.getElementById('q-text').innerText = question.q;
-                document.getElementById('opt-text-0').innerText = question.a;
-                document.getElementById('opt-text-1').innerText = question.b;
+                progressBar.style.width = `${progress}%`;
+                qPct.innerText = `${Math.round(progress)}%`;
+                qText.innerText = question.q;
+                optText0.innerText = question.a;
+                optText1.innerText = question.b;
                 this.updateOptionUI();
-                const nextBtn = document.getElementById('next-btn');
                 nextBtn.disabled = this.engine.state.selectedCurrent === null;
                 nextBtn.innerHTML = (this.engine.state.currentQuestion === this.engine.questions.length - LAST_QUESTION_OFFSET) ?
                     LAST_QUESTION_TEXT :
                     CONTINUE_TEXT;
                 lucide.createIcons();
             };
-
-            const wrapper = document.getElementById('q-wrapper');
-            const opts = document.getElementById('opt-container');
 
             if (animate) {
                 wrapper.style.opacity = HIDDEN_OPACITY; wrapper.style.transform = OFFSCREEN_LEFT;
@@ -57,26 +65,26 @@ export function createQuizUI(engine) {
         },
 
         updateOptionUI() {
-            document.getElementById('opt-0').classList.toggle('selected', this.engine.state.selectedCurrent === OPTION_ZERO);
-            document.getElementById('opt-1').classList.toggle('selected', this.engine.state.selectedCurrent === OPTION_ONE);
+            opt0.classList.toggle('selected', this.engine.state.selectedCurrent === OPTION_ZERO);
+            opt1.classList.toggle('selected', this.engine.state.selectedCurrent === OPTION_ONE);
         },
 
         attachHandlers() {
-            document.getElementById('opt-0').addEventListener('click', () => {
+            opt0.addEventListener('click', () => {
                 if (this.engine.state.selectedCurrent !== OPTION_ZERO) playSound('select');
                 this.engine.selectOption(OPTION_ZERO);
                 this.updateOptionUI();
-                document.getElementById('next-btn').disabled = false;
+                nextBtn.disabled = false;
             });
 
-            document.getElementById('opt-1').addEventListener('click', () => {
+            opt1.addEventListener('click', () => {
                 if (this.engine.state.selectedCurrent !== OPTION_ONE) playSound('select');
                 this.engine.selectOption(OPTION_ONE);
                 this.updateOptionUI();
-                document.getElementById('next-btn').disabled = false;
+                nextBtn.disabled = false;
             });
 
-            document.getElementById('next-btn').addEventListener('click', () => {
+            nextBtn.addEventListener('click', () => {
                 if (this.engine.state.selectedCurrent === null) return;
 
                 if (this.engine.advance()) {

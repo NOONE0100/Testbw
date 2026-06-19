@@ -12,13 +12,27 @@ const NAVIGATION_DELAY_MS = 200;
 function initCommonPage() {
     lucide.createIcons();
 
+    const spotlight = document.getElementById('spotlight');
+    if (!spotlight) return;
+
+    let pendingX = 0;
+    let pendingY = 0;
+    let frameRequested = false;
+
+    const updateSpotlight = () => {
+        frameRequested = false;
+        spotlight.style.setProperty('--mouse-x', `${pendingX}px`);
+        spotlight.style.setProperty('--mouse-y', `${pendingY}px`);
+    };
+
     document.addEventListener('mousemove', (e) => {
-        const spotlight = document.getElementById('spotlight');
-        if (spotlight) {
-            spotlight.style.setProperty('--mouse-x', `${e.clientX}px`);
-            spotlight.style.setProperty('--mouse-y', `${e.clientY}px`);
+        pendingX = e.clientX;
+        pendingY = e.clientY;
+        if (!frameRequested) {
+            frameRequested = true;
+            requestAnimationFrame(updateSpotlight);
         }
-    });
+    }, { passive: true });
 }
 
 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
