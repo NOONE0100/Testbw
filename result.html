@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results | Persona</title>
+    <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+    <link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+    <link href="[https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap)" rel="stylesheet">
+    <script src="[https://unpkg.com/lucide@latest](https://unpkg.com/lucide@latest)"></script>
+    <script src="[https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js](https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js)"></script>
+    <script src="[https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js](https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js)"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="ambient-bg"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="noise-overlay"></div>
+    <div class="spotlight" id="spotlight"></div>
+
+    <div class="app-container" id="results-container">
+        <div class="glass-panel" style="display: flex; flex-direction: column;">
+            <div class="results-hero">
+                <div class="type-badge" id="res-type">---</div>
+                <div class="type-title" id="res-name">Loading...</div>
+            </div>
+            
+            <p id="res-desc" style="text-align: center; font-size: 1.2rem; color: #FFF; margin-bottom: 48px; line-height: 1.6;"></p>
+            
+            <div class="section-block">
+                <h3>Cognitive Profile</h3>
+                <div class="score-grid" id="res-scores"></div>
+            </div>
+
+            <div class="section-block">
+                <h3>Core Traits</h3>
+                <div class="traits-container" id="res-traits"></div>
+            </div>
+
+            <div class="section-block">
+                <h3>Career Alignment</h3>
+                <div class="careers-grid" id="res-careers"></div>
+            </div>
+
+            <div class="retake-wrapper" id="action-buttons">
+                <button class="btn-secondary" id="download-btn">
+                    <i data-lucide="download"></i> Save as PDF
+                </button>
+                <button class="btn-primary" id="reset-btn">
+                    <i data-lucide="rotate-ccw"></i> Retake Assessment
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="result.js"></script>
+</body>
+</html>

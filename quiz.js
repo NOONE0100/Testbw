@@ -1,0 +1,210 @@
+document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+
+    document.addEventListener('mousemove', (e) => {
+        const spotlight = document.getElementById('spotlight');
+        if(spotlight) {
+            spotlight.style.setProperty('--mouse-x', `${e.clientX}px`);
+            spotlight.style.setProperty('--mouse-y', `${e.clientY}px`);
+        }
+    });
+
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx;
+
+    function playSound(type = 'select') {
+        try {
+            if (!audioCtx) audioCtx = new AudioContext();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            if (type === 'select') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(800, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            } else {
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(400, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            }
+            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+        } catch(e) {}
+    }
+
+    const questions = [
+        { q: "At a party, do you usually:", a: "Interact with many, including strangers", b: "Interact with a few people you know" },
+        { q: "Are you generally more:", a: "Realistic than speculative", b: "Speculative than realistic" },
+        { q: "Is it worse to:", a: "Have your 'head in the clouds'", b: "Be 'in a rut'" },
+        { q: "Are you more impressed by:", a: "Principles and logic", b: "Emotions and feelings" },
+        { q: "Are you more drawn toward the:", a: "Convincing and logical", b: "Touching and sentimental" },
+        { q: "Do you prefer to work:", a: "To strict deadlines", b: "Just 'whenever' you feel inspired" },
+        { q: "Do you tend to make choices:", a: "Rather carefully", b: "Somewhat impulsively" },
+        { q: "At parties do you:", a: "Stay late, with increasing energy", b: "Leave early, with decreased energy" },
+        { q: "Are you more attracted to:", a: "Sensible, grounded people", b: "Imaginative, creative people" },
+        { q: "Are you more interested in:", a: "What is actual and present", b: "What is possible in the future" },
+        { q: "In judging others, are you more swayed by:", a: "Laws and rules", b: "Individual circumstances" },
+        { q: "In approaching others, is your inclination to be:", a: "Objective and detached", b: "Personal and involved" },
+        { q: "Are you generally more:", a: "Punctual", b: "Leisurely" },
+        { q: "Does it bother you more having things:", a: "Incomplete", b: "Completed" },
+        { q: "In your social groups do you:", a: "Keep abreast of other's happenings", b: "Get behind on the news" },
+        { q: "In doing ordinary things, are you more likely to:", a: "Do it the usual, proven way", b: "Do it your own unique way" },
+        { q: "Do you believe writers should:", a: "Say exactly what they mean", b: "Express things using analogies" },
+        { q: "Which appeals to you more:", a: "Consistency of thought", b: "Harmonious human relationships" },
+        { q: "Are you more comfortable making:", a: "Logical judgments", b: "Value-based judgments" },
+        { q: "Do you prefer things to be:", a: "Settled and decided", b: "Unsettled and undecided" },
+        { q: "Would you say you are more:", a: "Serious and determined", b: "Easy-going" },
+        { q: "In phoning, do you:", a: "Just start talking", b: "Rehearse what you'll say beforehand" },
+        { q: "Do you believe facts:", a: "Speak for themselves", b: "Simply illustrate broader principles" },
+        { q: "Are visionaries:", a: "Somewhat annoying", b: "Rather fascinating" },
+        { q: "Are you more often:", a: "A cool-headed person", b: "A warm-hearted person" },
+        { q: "Is it worse to be:", a: "Unjust", b: "Merciless" },
+        { q: "Should one usually let events occur:", a: "By careful selection and choice", b: "Randomly and by chance" },
+        { q: "Do you feel better about:", a: "Having purchased something", b: "Having the option to buy" },
+        { q: "In company do you:", a: "Initiate conversation", b: "Wait to be approached" },
+        { q: "Is common sense:", a: "Rarely questionable", b: "Frequently questionable" },
+        { q: "Do you think children often do not:", a: "Make themselves useful enough", b: "Exercise their fantasy enough" },
+        { q: "In making decisions, do you feel more comfortable with:", a: "Standards and rules", b: "Feelings and empathy" },
+        { q: "Are you more:", a: "Firm than gentle", b: "Gentle than firm" },
+        { q: "Which is more admirable:", a: "The ability to organize and be methodical", b: "The ability to adapt and make do" },
+        { q: "Do you put more value on the:", a: "Definite and closed", b: "Open-minded and infinite" },
+        { q: "Does new and non-routine interaction with others:", a: "Stimulate and energize you", b: "Tax your reserves" },
+        { q: "Are you more frequently:", a: "A practical sort of person", b: "A fanciful sort of person" },
+        { q: "Are you more likely to:", a: "See how others are useful", b: "See how others see things" },
+        { q: "Which is more satisfying:", a: "To discuss an issue thoroughly", b: "To arrive at agreement on an issue" },
+        { q: "Which rules you more:", a: "Your head", b: "Your heart" },
+        { q: "Are you more comfortable with work that is:", a: "Contracted and agreed upon", b: "Done on a casual basis" },
+        { q: "Do you tend to look for:", a: "The orderly and planned", b: "Whatever turns up" },
+        { q: "Do you prefer:", a: "Many friends with brief contact", b: "A few close friends with lengthy contact" },
+        { q: "Do you go more by:", a: "Facts", b: "Principles" },
+        { q: "Are you more interested in:", a: "Production and distribution", b: "Design and research" },
+        { q: "Which is more of a compliment:", a: "They are a very logical person", b: "They are a very sentimental person" },
+        { q: "Do you value in yourself more that you are:", a: "Unwavering", b: "Devoted" },
+        { q: "Do you more often prefer the:", a: "Final and unalterable statement", b: "Tentative and preliminary statement" },
+        { q: "Are you more comfortable:", a: "After making a decision", b: "Before making a decision" },
+        { q: "Do you:", a: "Speak easily and at length with strangers", b: "Find little to say to strangers" },
+        { q: "Are you more likely to trust your:", a: "Experience", b: "Hunch" },
+        { q: "Do you feel:", a: "More practical than ingenious", b: "More ingenious than practical" },
+        { q: "Which person is more to be complimented:", a: "One of clear reason", b: "One of strong feeling" },
+        { q: "Are you inclined more to be:", a: "Fair-minded", b: "Sympathetic" },
+        { q: "Is it preferable mostly to:", a: "Make sure things are arranged", b: "Just let things happen" },
+        { q: "In relationships, should most things be:", a: "Re-negotiable", b: "Random and circumstantial" },
+        { q: "When the phone rings, do you:", a: "Hasten to answer it first", b: "Hope someone else will answer" },
+        { q: "Do you prize more in yourself:", a: "A strong sense of reality", b: "A vivid imagination" },
+        { q: "Are you drawn more to:", a: "Fundamentals", b: "Overtones and subtext" },
+        { q: "Which seems the greater error:", a: "To be too passionate", b: "To be too objective" },
+        { q: "Do you see yourself as basically:", a: "Hard-headed", b: "Soft-hearted" },
+        { q: "Which situation appeals to you more:", a: "The structured and scheduled", b: "The unstructured and unscheduled" },
+        { q: "Are you a person that is more:", a: "Routinized than whimsical", b: "Whimsical than routinized" },
+        { q: "Are you more inclined to be:", a: "Easy to approach", b: "Somewhat reserved" },
+        { q: "In writing, do you prefer:", a: "The more literal", b: "The more figurative" },
+        { q: "Is it harder for you to:", a: "Identify with others", b: "Utilize others" },
+        { q: "Which do you wish more for yourself:", a: "Clarity of reason", b: "Strength of compassion" },
+        { q: "Which is the greater fault:", a: "Being indiscriminate", b: "Being critical" },
+        { q: "Do you prefer the:", a: "Planned event", b: "Unplanned event" },
+        { q: "Do you tend to be more:", a: "Deliberate than spontaneous", b: "Spontaneous than deliberate" }
+    ];
+
+    let state = JSON.parse(localStorage.getItem('personaPremiumState'));
+
+    if (!state || state.isComplete) {
+        window.location.href = './index.html';
+        return;
+    }
+
+    renderQuestion(false);
+
+    function renderQuestion(animate = true) {
+        const q = questions[state.currentQuestion];
+        const updateContent = () => {
+            document.getElementById('q-meta').innerText = `Question ${state.currentQuestion + 1} of ${questions.length}`;
+            const progress = (state.currentQuestion / questions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('q-pct').innerText = `${Math.round(progress)}%`;
+            
+            document.getElementById('q-text').innerText = q.q;
+            document.getElementById('opt-text-0').innerText = q.a;
+            document.getElementById('opt-text-1').innerText = q.b;
+            
+            updateOptionUI();
+            
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.disabled = state.selectedCurrent === null;
+            nextBtn.innerHTML = (state.currentQuestion === questions.length - 1) ? 
+                'Calculate Result <i data-lucide="check-circle"></i>' : 
+                'Continue <i data-lucide="arrow-right"></i>';
+            lucide.createIcons();
+        };
+
+        const wrapper = document.getElementById('q-wrapper');
+        const opts = document.getElementById('opt-container');
+
+        if (animate) {
+            wrapper.style.opacity = '0'; wrapper.style.transform = 'translateX(-10px)';
+            opts.style.opacity = '0'; opts.style.transform = 'translateX(10px)';
+            setTimeout(() => {
+                updateContent();
+                wrapper.style.transition = 'all 0.4s ease'; opts.style.transition = 'all 0.4s ease';
+                wrapper.style.opacity = '1'; wrapper.style.transform = 'translateX(0)';
+                opts.style.opacity = '1'; opts.style.transform = 'translateX(0)';
+            }, 300);
+        } else {
+            updateContent();
+        }
+    }
+
+    function updateOptionUI() {
+        document.getElementById('opt-0').classList.toggle('selected', state.selectedCurrent === 0);
+        document.getElementById('opt-1').classList.toggle('selected', state.selectedCurrent === 1);
+    }
+
+    document.getElementById('opt-0').addEventListener('click', () => {
+        if(state.selectedCurrent !== 0) playSound('select');
+        state.selectedCurrent = 0;
+        updateOptionUI();
+        document.getElementById('next-btn').disabled = false;
+    });
+
+    document.getElementById('opt-1').addEventListener('click', () => {
+        if(state.selectedCurrent !== 1) playSound('select');
+        state.selectedCurrent = 1;
+        updateOptionUI();
+        document.getElementById('next-btn').disabled = false;
+    });
+
+    document.getElementById('next-btn').addEventListener('click', () => {
+        if (state.selectedCurrent === null) return;
+        
+        state.answers[state.currentQuestion] = state.selectedCurrent;
+        
+        if (state.currentQuestion < questions.length - 1) {
+            state.currentQuestion++;
+            state.selectedCurrent = state.answers[state.currentQuestion];
+            localStorage.setItem('personaPremiumState', JSON.stringify(state));
+            renderQuestion(true);
+        } else {
+            calculateResults();
+        }
+    });
+
+    function calculateResults() {
+        let s = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+        state.answers.forEach((ans, index) => {
+            const mod = index % 7;
+            if (mod === 0) { ans === 0 ? s.E++ : s.I++; } 
+            else if (mod === 1 || mod === 2) { ans === 0 ? s.S++ : s.N++; } 
+            else if (mod === 3 || mod === 4) { ans === 0 ? s.T++ : s.F++; } 
+            else if (mod === 5 || mod === 6) { ans === 0 ? s.J++ : s.P++; }
+        });
+        
+        state.result = (s.E >= s.I ? 'E' : 'I') + (s.S >= s.N ? 'S' : 'N') + (s.T >= s.F ? 'T' : 'F') + (s.J >= s.P ? 'J' : 'P');
+        state.scores = s;
+        state.isComplete = true;
+        
+        document.getElementById('progress-bar').style.width = '100%';
+        document.getElementById('q-pct').innerText = '100%';
+        
+        localStorage.setItem('personaPremiumState', JSON.stringify(state));
+        
+        setTimeout(() => {
+            window.location.href = './result.html';
+        }, 600);
+    }
+});

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz | Persona</title>
+    <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+    <link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+    <link href="[https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap)" rel="stylesheet">
+    <script src="[https://unpkg.com/lucide@latest](https://unpkg.com/lucide@latest)"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="ambient-bg"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="noise-overlay"></div>
+    <div class="spotlight" id="spotlight"></div>
+
+    <div class="app-container">
+        <div class="glass-panel" style="display: flex; flex-direction: column;">
+            <div class="quiz-header">
+                <span class="progress-text" id="q-meta">Loading...</span>
+                <span class="progress-text" id="q-pct">0%</span>
+            </div>
+            <div class="progress-track">
+                <div class="progress-fill" id="progress-bar"></div>
+            </div>
+            <div class="question-wrapper" id="q-wrapper">
+                <div class="question-text" id="q-text">Loading prompt...</div>
+            </div>
+            <div class="options-container" id="opt-container">
+                <button class="option-btn" id="opt-0">
+                    <div class="option-indicator"></div>
+                    <span class="option-text" id="opt-text-0">Option A</span>
+                </button>
+                <button class="option-btn" id="opt-1">
+                    <div class="option-indicator"></div>
+                    <span class="option-text" id="opt-text-1">Option B</span>
+                </button>
+            </div>
+            <button class="btn-primary" id="next-btn" disabled style="width: 100%;">
+                Continue <i data-lucide="arrow-right"></i>
+            </button>
+        </div>
+    </div>
+    <script src="quiz.js"></script>
+</body>
+</html>

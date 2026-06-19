@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructions | Persona</title>
+    <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+    <link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+    <link href="[https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap)" rel="stylesheet">
+    <script src="[https://unpkg.com/lucide@latest](https://unpkg.com/lucide@latest)"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="ambient-bg"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="noise-overlay"></div>
+    <div class="spotlight" id="spotlight"></div>
+
+    <div class="app-container">
+        <div class="glass-panel" style="display: flex; flex-direction: column;">
+            <h2>How it works</h2>
+            <p>You will be presented with 70 behavioral prompts to evaluate your cognitive preferences.</p>
+            <div class="instruction-list">
+                <div class="instruction-item">
+                    <i data-lucide="user" class="instruction-icon"></i>
+                    <div class="instruction-text">
+                        <h4>Be Authentic</h4>
+                        <p>Answer as "the way you genuinely are," not how you aspire to be.</p>
+                    </div>
+                </div>
+                <div class="instruction-item">
+                    <i data-lucide="zap" class="instruction-icon"></i>
+                    <div class="instruction-text">
+                        <h4>Trust Your Instincts</h4>
+                        <p>Don't over-analyze. Your immediate intuitive response is usually the most accurate.</p>
+                    </div>
+                </div>
+                <div class="instruction-item">
+                    <i data-lucide="save" class="instruction-icon"></i>
+                    <div class="instruction-text">
+                        <h4>Auto-Save Enabled</h4>
+                        <p>Your progress is saved locally. You can close this tab and resume anytime.</p>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-primary" id="begin-quiz-btn">
+                Start Quiz <i data-lucide="play"></i>
+            </button>
+        </div>
+    </div>
+    <script src="instructions.js"></script>
+</body>
+</html>
